@@ -92,7 +92,76 @@
   }
   #cursor.grande { width: 56px; height: 56px; margin: -28px 0 0 -28px; background: rgba(94, 234, 212, .15); }
   @media (hover: none) { #cursor { display: none; } }
-  @media (prefers-reduced-motion: reduce) { h1 { animation: none; } }
+  
+
+  /* ===== Punto interactivo: Estadio Nacional ===== */
+  .punto-estadio {
+    width: 30px; height: 30px;
+    cursor: pointer;
+  }
+  .punto-estadio .centro {
+    position: absolute; inset: 9px;
+    border-radius: 50%;
+    background: var(--acento);
+    box-shadow: 0 0 0 3px rgba(11, 16, 32, .65);
+  }
+  .punto-estadio .pulso {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--acento2);
+    animation: pulso 2s ease-out infinite;
+  }
+  @keyframes pulso {
+    0%   { transform: scale(.5); opacity: 1; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  .punto-estadio .ficha {
+    position: absolute;
+    bottom: 44px; left: 50%;
+    width: 250px;
+    transform: translate(-50%, 8px);
+    padding: 14px 16px 14px;
+    text-align: left;
+    color: var(--texto);
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    background: rgba(11, 16, 32, .82);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    border-top: 3px solid var(--acento);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .25s, transform .25s, visibility .25s;
+    pointer-events: none;
+  }
+  .punto-estadio .ficha::after {
+    content: "";
+    position: absolute; left: 50%; bottom: -8px;
+    width: 14px; height: 14px;
+    background: rgba(11, 16, 32, .82);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .punto-estadio .ficha small {
+    display: block;
+    font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--acento);
+  }
+  .punto-estadio .ficha strong {
+    display: block;
+    font-size: 1.25rem; line-height: 1.2;
+    margin: 2px 0 4px;
+  }
+  .punto-estadio .ficha span {
+    display: block;
+    font-size: .85rem; color: var(--suave);
+  }
+  .punto-estadio:hover .ficha,
+  .punto-estadio.abierto .ficha {
+    opacity: 1; visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  @media (prefers-reduced-motion: reduce) { h1, .punto-estadio .pulso { animation: none; } }
 </style>
 </head>
 <body>
@@ -186,6 +255,19 @@
     return c.toDataURL('image/jpeg', .9);
   }
 
+  // Diseño del punto interactivo del Estadio Nacional (edita los textos aquí)
+  function crearPuntoEstadio(div) {
+    div.classList.add('abierto'); // empieza abierto; un clic lo cierra o abre
+    div.innerHTML =
+      '<span class="pulso"></span><span class="centro"></span>' +
+      '<div class="ficha">' +
+        '<small>Punto de interés</small>' +
+        '<strong>Estadio Nacional</strong>' +
+        '<span>Julio Martínez Prádanos · Ñuñoa, Santiago</span>' +
+      '</div>';
+    div.addEventListener('click', () => div.classList.toggle('abierto'));
+  }
+
   pannellum.viewer('panorama', {
     type: 'equirectangular',
     panorama: MI_IMAGEN_360 || crearPanoramaDeEjemplo(),
@@ -196,7 +278,12 @@
     pitch: -15,
     yaw: 0,
     hotSpots: [
-      { pitch: -17, yaw: -0.7, type: 'info', text: 'Estadio Nacional' }
+      {
+        pitch: -17, yaw: -0.7,
+        type: 'custom',
+        cssClass: 'punto-estadio',
+        createTooltipFunc: crearPuntoEstadio
+      }
     ]
   });
 
