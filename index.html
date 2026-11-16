@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Página de prueba</title>
+<style>
+  :root {
+    --fondo: #eef3f1;
+    --texto: #1d2b27;
+    --suave: #52625d;
+    --acento: #1f7a6b;
+    --tarjeta: #ffffff;
+    --borde: #cfdad6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --fondo: #13201d;
+      --texto: #e6efec;
+      --suave: #9db1ab;
+      --acento: #4fc0ad;
+      --tarjeta: #1b2d29;
+      --borde: #2f443f;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: Georgia, "Times New Roman", serif;
+    line-height: 1.65;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; }
+  h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.15; margin: 0 0 1rem; }
+  p { color: var(--suave); max-width: 60ch; }
+  .tarjeta {
+    background: var(--tarjeta);
+    border: 1px solid var(--borde);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 2rem;
+  }
+  button {
+    font: inherit;
+    background: var(--acento);
+    color: #fff;
+    border: 0;
+    border-radius: 6px;
+    padding: .6rem 1.2rem;
+    cursor: pointer;
+  }
+  button:focus-visible { outline: 3px solid var(--texto); outline-offset: 2px; }
+  #contador { font-size: 1.25rem; margin-left: .75rem; color: var(--texto); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Mi página de prueba</h1>
+  <p>Si estás leyendo esto en un enlace público, la publicación funcionó. Este archivo es un solo HTML sin dependencias, así que puedes editarlo y volver a subirlo cuando quieras.</p>
+
+  <div class="tarjeta">
+    <p>Prueba que el JavaScript también funciona:</p>
+    <button id="boton">Sumar un clic</button>
+    <span id="contador">0</span>
+  </div>
+</main>
+<script>
+  let clics = 0;
+  document.getElementById('boton').addEventListener('click', () => {
+    clics++;
+    document.getElementById('contador').textContent = clics;
+  });
+</script>
+</body>
+</html>
