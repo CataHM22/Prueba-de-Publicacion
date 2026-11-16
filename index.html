@@ -3,74 +3,173 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Página de prueba</title>
+<title>Página de prueba con video y animación</title>
 <style>
   :root {
-    --fondo: #eef3f1;
-    --texto: #1d2b27;
-    --suave: #52625d;
-    --acento: #1f7a6b;
-    --tarjeta: #ffffff;
-    --borde: #cfdad6;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --fondo: #13201d;
-      --texto: #e6efec;
-      --suave: #9db1ab;
-      --acento: #4fc0ad;
-      --tarjeta: #1b2d29;
-      --borde: #2f443f;
-    }
+    --fondo: #0b1020;
+    --texto: #eef2ff;
+    --suave: #a9b4d6;
+    --acento: #5eead4;
+    --acento2: #f472b6;
   }
   * { box-sizing: border-box; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
     background: var(--fondo);
     color: var(--texto);
-    font-family: Georgia, "Times New Roman", serif;
-    line-height: 1.65;
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
   }
-  main { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; }
-  h1 { font-size: clamp(2rem, 6vw, 3rem); line-height: 1.15; margin: 0 0 1rem; }
-  p { color: var(--suave); max-width: 60ch; }
-  .tarjeta {
-    background: var(--tarjeta);
-    border: 1px solid var(--borde);
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-top: 2rem;
+  #fondo {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
   }
-  button {
-    font: inherit;
-    background: var(--acento);
-    color: #fff;
+  main {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 4rem 1.5rem 5rem;
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(2.2rem, 7vw, 3.8rem);
+    line-height: 1.1;
+    margin: 0 0 1rem;
+    background: linear-gradient(90deg, var(--acento), var(--acento2), var(--acento));
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: brillo 6s linear infinite;
+  }
+  @keyframes brillo { to { background-position: 200% center; } }
+  p { color: var(--suave); max-width: 52ch; margin: 0 auto 2rem; }
+  .video {
+    position: relative;
+    border-radius: 14px;
+    padding: 6px;
+    background: linear-gradient(135deg, var(--acento), var(--acento2));
+    box-shadow: 0 20px 60px rgba(94, 234, 212, .18);
+  }
+  .video iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
     border: 0;
-    border-radius: 6px;
-    padding: .6rem 1.2rem;
-    cursor: pointer;
+    border-radius: 9px;
+    background: #000;
   }
-  button:focus-visible { outline: 3px solid var(--texto); outline-offset: 2px; }
-  #contador { font-size: 1.25rem; margin-left: .75rem; color: var(--texto); }
+  .nota { margin-top: 2rem; font-size: .9rem; }
+  /* cursor con brillo */
+  #cursor {
+    position: fixed;
+    top: 0; left: 0;
+    width: 28px; height: 28px;
+    margin: -14px 0 0 -14px;
+    border: 2px solid var(--acento);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 5;
+    mix-blend-mode: screen;
+    transition: width .2s, height .2s, margin .2s, background .2s;
+  }
+  #cursor.grande {
+    width: 56px; height: 56px; margin: -28px 0 0 -28px;
+    background: rgba(94, 234, 212, .15);
+  }
+  @media (hover: none) { #cursor { display: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    h1 { animation: none; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>Mi página de prueba</h1>
-  <p>Si estás leyendo esto en un enlace público, la publicación funcionó. Este archivo es un solo HTML sin dependencias, así que puedes editarlo y volver a subirlo cuando quieras.</p>
+<canvas id="fondo"></canvas>
+<div id="cursor"></div>
 
-  <div class="tarjeta">
-    <p>Prueba que el JavaScript también funciona:</p>
-    <button id="boton">Sumar un clic</button>
-    <span id="contador">0</span>
+<main>
+  <h1>Todo en movimiento</h1>
+  <p>Una página de prueba con fondo animado, cursor con brillo y un video de YouTube incrustado. Mueve el mouse y mira cómo reaccionan las partículas.</p>
+
+  <div class="video">
+    <iframe src="https://www.youtube.com/embed/AS7GjauM0os?si=jUb5Ql94Nt_lyrw9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   </div>
+
+  <p class="nota">Si ves esto en un enlace público, GitHub Pages aloja animaciones y videos embebidos sin problema.</p>
 </main>
+
 <script>
-  let clics = 0;
-  document.getElementById('boton').addEventListener('click', () => {
-    clics++;
-    document.getElementById('contador').textContent = clics;
+  // ---- Fondo animado: partículas conectadas que se alejan del cursor ----
+  const canvas = document.getElementById('fondo');
+  const ctx = canvas.getContext('2d');
+  const mouse = { x: -9999, y: -9999 };
+  let particulas = [];
+  const reducir = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function ajustar() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const cantidad = Math.min(110, Math.floor(canvas.width * canvas.height / 14000));
+    particulas = Array.from({ length: cantidad }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - .5) * .5,
+      vy: (Math.random() - .5) * .5,
+      r: Math.random() * 2 + 1
+    }));
+  }
+
+  function dibujar() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const p of particulas) {
+      const dx = p.x - mouse.x, dy = p.y - mouse.y;
+      const d = Math.hypot(dx, dy);
+      if (d < 120 && d > 0) { p.x += dx / d * 1.6; p.y += dy / d * 1.6; }
+      if (!reducir) { p.x += p.vx; p.y += p.vy; }
+      if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(94, 234, 212, .8)';
+      ctx.fill();
+    }
+    for (let i = 0; i < particulas.length; i++) {
+      for (let j = i + 1; j < particulas.length; j++) {
+        const a = particulas[i], b = particulas[j];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        if (d < 120) {
+          ctx.strokeStyle = 'rgba(244, 114, 182,' + (1 - d / 120) * .35 + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(dibujar);
+  }
+
+  // ---- Cursor personalizado ----
+  const cursor = document.getElementById('cursor');
+  window.addEventListener('mousemove', e => {
+    mouse.x = e.clientX; mouse.y = e.clientY;
+    cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
   });
+  window.addEventListener('mouseleave', () => { mouse.x = mouse.y = -9999; });
+  document.querySelector('.video').addEventListener('mouseenter', () => cursor.classList.add('grande'));
+  document.querySelector('.video').addEventListener('mouseleave', () => cursor.classList.remove('grande'));
+
+  window.addEventListener('resize', ajustar);
+  ajustar();
+  dibujar();
 </script>
 </body>
 </html>
