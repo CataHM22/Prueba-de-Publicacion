@@ -61,11 +61,20 @@
     border-radius: 9px;
     background: #000;
   }
+  main.arriba { padding-bottom: 1rem; }
+  .pano-full {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    margin: 1.5rem 0 4rem;
+    border-style: solid;
+    border-width: 4px 0;
+    border-image: linear-gradient(90deg, var(--acento), var(--acento2)) 1;
+  }
   #panorama {
     width: 100%;
-    height: 420px;
-    border-radius: 9px;
-    overflow: hidden;
+    height: 70vh;
+    min-height: 420px;
     background: #000;
     text-align: left;
   }
@@ -90,7 +99,7 @@
 <canvas id="fondo"></canvas>
 <div id="cursor"></div>
 
-<main>
+<main class="arriba">
   <h1>Todo en una sola página</h1>
   <p>Fondo animado, un video de YouTube y una imagen 360 que puedes girar con el mouse o con el dedo.</p>
 
@@ -100,18 +109,19 @@
   </div>
 
   <h2>Imagen 360</h2>
-  <p>Arrastra para girar la vista. Esta imagen de ejemplo se dibuja con código; abajo te explico cómo cambiarla por tu foto real.</p>
-  <div class="marco hover-grande">
-    <div id="panorama"></div>
-  </div>
+  <p>Arrastra para girar la vista.</p>
 </main>
+
+<div class="pano-full hover-grande">
+  <div id="panorama"></div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
   // ================== IMAGEN 360 ==================
   // Para usar tu propia foto: sube "foto360.jpg" al repositorio
   // y cambia null por 'foto360.jpg' en la línea de abajo.
-  const MI_IMAGEN_360 = null;
+  const MI_IMAGEN_360 = 'foto360.jpg';
 
   // Imagen de ejemplo dibujada con código (formato equirectangular 2:1)
   function crearPanoramaDeEjemplo() {
