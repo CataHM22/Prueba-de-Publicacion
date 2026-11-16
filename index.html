@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Página de prueba con video y animación</title>
+<title>Prueba: video, animación y foto 360</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
 <style>
   :root {
     --fondo: #0b1020;
@@ -22,17 +23,11 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  #fondo {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-  }
+  #fondo { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; }
   main {
     position: relative;
     z-index: 1;
-    max-width: 760px;
+    max-width: 820px;
     margin: 0 auto;
     padding: 4rem 1.5rem 5rem;
     text-align: center;
@@ -49,15 +44,15 @@
     animation: brillo 6s linear infinite;
   }
   @keyframes brillo { to { background-position: 200% center; } }
-  p { color: var(--suave); max-width: 52ch; margin: 0 auto 2rem; }
-  .video {
-    position: relative;
+  h2 { font-size: 1.5rem; margin: 3.5rem 0 .5rem; }
+  p { color: var(--suave); max-width: 54ch; margin: 0 auto 1.5rem; }
+  .marco {
     border-radius: 14px;
     padding: 6px;
     background: linear-gradient(135deg, var(--acento), var(--acento2));
     box-shadow: 0 20px 60px rgba(94, 234, 212, .18);
   }
-  .video iframe {
+  .marco iframe {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -66,8 +61,14 @@
     border-radius: 9px;
     background: #000;
   }
-  .nota { margin-top: 2rem; font-size: .9rem; }
-  /* cursor con brillo */
+  #panorama {
+    width: 100%;
+    height: 420px;
+    border-radius: 9px;
+    overflow: hidden;
+    background: #000;
+    text-align: left;
+  }
   #cursor {
     position: fixed;
     top: 0; left: 0;
@@ -80,14 +81,9 @@
     mix-blend-mode: screen;
     transition: width .2s, height .2s, margin .2s, background .2s;
   }
-  #cursor.grande {
-    width: 56px; height: 56px; margin: -28px 0 0 -28px;
-    background: rgba(94, 234, 212, .15);
-  }
+  #cursor.grande { width: 56px; height: 56px; margin: -28px 0 0 -28px; background: rgba(94, 234, 212, .15); }
   @media (hover: none) { #cursor { display: none; } }
-  @media (prefers-reduced-motion: reduce) {
-    h1 { animation: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { h1 { animation: none; } }
 </style>
 </head>
 <body>
@@ -95,18 +91,104 @@
 <div id="cursor"></div>
 
 <main>
-  <h1>Todo en movimiento</h1>
-  <p>Una página de prueba con fondo animado, cursor con brillo y un video de YouTube incrustado. Mueve el mouse y mira cómo reaccionan las partículas.</p>
+  <h1>Todo en una sola página</h1>
+  <p>Fondo animado, un video de YouTube y una imagen 360 que puedes girar con el mouse o con el dedo.</p>
 
-  <div class="video">
+  <h2>Video</h2>
+  <div class="marco hover-grande">
     <iframe src="https://www.youtube.com/embed/AS7GjauM0os?si=jUb5Ql94Nt_lyrw9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
   </div>
 
-  <p class="nota">Si ves esto en un enlace público, GitHub Pages aloja animaciones y videos embebidos sin problema.</p>
+  <h2>Imagen 360</h2>
+  <p>Arrastra para girar la vista. Esta imagen de ejemplo se dibuja con código; abajo te explico cómo cambiarla por tu foto real.</p>
+  <div class="marco hover-grande">
+    <div id="panorama"></div>
+  </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 <script>
-  // ---- Fondo animado: partículas conectadas que se alejan del cursor ----
+  // ================== IMAGEN 360 ==================
+  // Para usar tu propia foto: sube "foto360.jpg" al repositorio
+  // y cambia null por 'foto360.jpg' en la línea de abajo.
+  const MI_IMAGEN_360 = null;
+
+  // Imagen de ejemplo dibujada con código (formato equirectangular 2:1)
+  function crearPanoramaDeEjemplo() {
+    const W = 2048, H = 1024, hor = H * 0.55;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const g = c.getContext('2d');
+
+    // cielo
+    let s = g.createLinearGradient(0, 0, 0, hor);
+    s.addColorStop(0, '#050816');
+    s.addColorStop(.6, '#3b2a6b');
+    s.addColorStop(1, '#f4a07a');
+    g.fillStyle = s; g.fillRect(0, 0, W, hor);
+
+    // estrellas
+    for (let i = 0; i < 450; i++) {
+      g.fillStyle = 'rgba(255,255,255,' + (Math.random() * .8 + .2) + ')';
+      g.fillRect(Math.random() * W, Math.random() * hor * .75, 2, 2);
+    }
+
+    // sol con brillo
+    const sx = W * .62, sy = hor - 50;
+    const sol = g.createRadialGradient(sx, sy, 10, sx, sy, 190);
+    sol.addColorStop(0, 'rgba(255,235,180,1)');
+    sol.addColorStop(.3, 'rgba(255,170,120,.6)');
+    sol.addColorStop(1, 'rgba(255,170,120,0)');
+    g.fillStyle = sol; g.fillRect(sx - 200, sy - 200, 400, 400);
+
+    // montañas (usan senos con frecuencia entera para que los bordes encajen)
+    function montanas(base, a, color) {
+      g.fillStyle = color;
+      g.beginPath(); g.moveTo(0, hor);
+      for (let x = 0; x <= W; x += 4) {
+        const t = x / W * Math.PI * 2;
+        const y = base - a * (Math.sin(t * 3 + 1) * .5 + Math.sin(t * 7 + 2) * .3 + Math.sin(t * 17) * .2);
+        g.lineTo(x, y);
+      }
+      g.lineTo(W, hor); g.closePath(); g.fill();
+    }
+    montanas(hor - 40, 70, '#4a3470');
+    montanas(hor - 15, 50, '#1f1b3d');
+
+    // suelo
+    s = g.createLinearGradient(0, hor, 0, H);
+    s.addColorStop(0, '#12263a');
+    s.addColorStop(1, '#06121c');
+    g.fillStyle = s; g.fillRect(0, hor, W, H - hor);
+    g.strokeStyle = 'rgba(94,234,212,.25)'; g.lineWidth = 2;
+    for (let x = 0; x <= W; x += W / 32) { g.beginPath(); g.moveTo(x, hor); g.lineTo(x, H); g.stroke(); }
+    for (let i = 1; i < 8; i++) {
+      const y = hor + Math.pow(i / 8, 2) * (H - hor);
+      g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke();
+    }
+
+    // letreros para notar el giro (NORTE se dibuja en ambos bordes y se une)
+    g.font = 'bold 120px "Trebuchet MS", sans-serif';
+    g.textAlign = 'center'; g.fillStyle = '#5eead4';
+    [['NORTE', 0], ['NORTE', W], ['ESTE', W * .25], ['SUR', W * .5], ['OESTE', W * .75]]
+      .forEach(([t, x]) => g.fillText(t, x, hor - 110));
+
+    return c.toDataURL('image/jpeg', .9);
+  }
+
+  pannellum.viewer('panorama', {
+    type: 'equirectangular',
+    panorama: MI_IMAGEN_360 || crearPanoramaDeEjemplo(),
+    autoLoad: true,
+    autoRotate: -2,
+    showControls: true,
+    hfov: 100,
+    hotSpots: [
+      { pitch: 8, yaw: 0, type: 'info', text: '¡Hola! Esto es un punto interactivo' }
+    ]
+  });
+
+  // ================== FONDO ANIMADO ==================
   const canvas = document.getElementById('fondo');
   const ctx = canvas.getContext('2d');
   const mouse = { x: -9999, y: -9999 };
@@ -147,25 +229,24 @@
         if (d < 120) {
           ctx.strokeStyle = 'rgba(244, 114, 182,' + (1 - d / 120) * .35 + ')';
           ctx.lineWidth = 1;
-          ctx.beginPath();
-          ctx.moveTo(a.x, a.y);
-          ctx.lineTo(b.x, b.y);
-          ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
     }
     requestAnimationFrame(dibujar);
   }
 
-  // ---- Cursor personalizado ----
+  // ================== CURSOR ==================
   const cursor = document.getElementById('cursor');
   window.addEventListener('mousemove', e => {
     mouse.x = e.clientX; mouse.y = e.clientY;
     cursor.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
   });
   window.addEventListener('mouseleave', () => { mouse.x = mouse.y = -9999; });
-  document.querySelector('.video').addEventListener('mouseenter', () => cursor.classList.add('grande'));
-  document.querySelector('.video').addEventListener('mouseleave', () => cursor.classList.remove('grande'));
+  document.querySelectorAll('.hover-grande').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('grande'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('grande'));
+  });
 
   window.addEventListener('resize', ajustar);
   ajustar();
